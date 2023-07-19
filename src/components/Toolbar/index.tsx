@@ -1,15 +1,18 @@
 import {
     Box,
-    Button,
     ColorPicker,
     Flex,
     FontSelector,
     Stack,
+    Tooltip,
+    TooltipButton,
 } from "ui-components";
 import {
+    FontDownload,
     FormatBold,
     FormatItalic,
     FormatUnderlined,
+    Mode,
     StrikethroughS,
     TextDecrease,
     TextIncrease,
@@ -47,17 +50,18 @@ const fontFamilyList = [
 ];
 
 const colors = [
-    "gray.900",
-    "gray.500",
-    "red.500",
-    "gray.700",
-    "green.500",
-    "blue.500",
-    "blue.800",
-    "yellow.500",
-    "orange.500",
-    "purple.500",
-    "pink.500",
+    { name: "black", value: "black" },
+    { name: "gray.500", value: "#6b7280" },
+    { name: "red.500", value: "#ef4444" },
+    { name: "gray.700", value: "#374151" },
+    { name: "green.500", value: "#10b981" },
+    { name: "blue.500", value: "#3b82f6" },
+    { name: "blue.800", value: "#1e40af" },
+    { name: "yellow.500", value: "#f59e0b" },
+    { name: "orange.500", value: "#f97316" },
+    { name: "purple.500", value: "#8b5cf6" },
+    { name: "pink.500", value: "#ec4899" },
+    { name: "transparent", value: "transparent" },
 ];
 
 export function ToolBar() {
@@ -65,26 +69,39 @@ export function ToolBar() {
         <Flex justifyContent="center" gap="2">
             <Box p={4}>
                 <Stack direction="row" spacing={4} align="center">
-                    <ColorPicker colors={colors} />
                     <FontSelector fontFamilyList={fontFamilyList} />
-                    <Button colorScheme="teal" variant="ghost">
+                    <TooltipButton label="strike line">
                         <TextIncrease />
-                    </Button>
-                    <Button colorScheme="teal" variant="ghost">
+                    </TooltipButton>
+                    <TooltipButton label="strike line">
                         <TextDecrease />
-                    </Button>
-                    <Button colorScheme="teal" variant="ghost">
+                    </TooltipButton>
+                    <TooltipButton label="strike line">
                         <FormatBold />
-                    </Button>
-                    <Button colorScheme="teal" variant="ghost">
+                    </TooltipButton>
+                    <TooltipButton label="strike line">
                         <FormatItalic />
-                    </Button>
-                    <Button colorScheme="teal" variant="ghost">
+                    </TooltipButton>
+                    <TooltipButton label="strike line">
                         <FormatUnderlined />
-                    </Button>
-                    <Button colorScheme="teal" variant="ghost">
+                    </TooltipButton>
+                    <TooltipButton label="strike line">
                         <StrikethroughS />
-                    </Button>
+                    </TooltipButton>
+                    <ColorPicker
+                        colors={colors}
+                        icon={FontDownload}
+                        label="Text color"
+                    />
+                    <ColorPicker
+                        colors={colors}
+                        icon={Mode}
+                        label="highlight color"
+                        defaultColor={{
+                            name: "transparent",
+                            value: "transparent",
+                        }}
+                    />
                 </Stack>
             </Box>
         </Flex>

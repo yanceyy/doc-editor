@@ -1,12 +1,12 @@
 import "./App.css";
 
-import { ToolBar } from "./components/Toolbar";
+import { Header } from "./components/Header";
 
 function App() {
     console.log("App");
     return (
         <>
-            <ToolBar />
+            <Header />
         </>
     );
 }

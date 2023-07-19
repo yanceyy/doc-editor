@@ -1,4 +1,5 @@
 import {
+    Box,
     Button,
     Center,
     Popover,
@@ -9,61 +10,76 @@ import {
     PopoverHeader,
     PopoverTrigger,
     SimpleGrid,
+    Tooltip,
 } from "@chakra-ui/react";
+import React, { useState } from "react";
 
-import { useState } from "react";
+import { TooltipButton } from "../TooltipButton";
 
+interface Color {
+    name: string;
+    value: string;
+}
 interface ColorPickerProps {
-    colors: string[];
-    onChange?: (color: string) => void;
+    colors: Color[];
+    onChange?: (color: Color) => void;
+    icon: React.FC;
+    label: string;
+    defaultColor?: Color;
 }
 
-export function ColorPicker({ colors, onChange }: ColorPickerProps) {
-    const [color, setColor] = useState("gray.500");
+export function ColorPicker({
+    colors,
+    onChange,
+    label,
+    defaultColor,
+    icon: Icon,
+}: ColorPickerProps) {
+    const [color, setColor] = useState<Color>(
+        defaultColor || {
+            name: "black",
+            value: "black",
+        }
+    );
 
     return (
-        <Popover variant="picker">
+        <Popover>
             <PopoverTrigger>
-                <Button
-                    aria-label={color}
-                    background={color}
-                    height="22px"
-                    width="22px"
-                    padding={0}
-                    minWidth="unset"
-                    borderRadius={3}
-                    _hover={{ backgroundColor: color }}
-                ></Button>
+                <Button aria-label={label}>
+                    <Tooltip label={label}>
+                        <Box>
+                            <Icon />
+                            <Box bg={color.value} w="100%" p="2px" />
+                        </Box>
+                    </Tooltip>
+                </Button>
             </PopoverTrigger>
-            <PopoverContent width="170px">
-                <PopoverArrow bg={color} />
-                <PopoverCloseButton color="white" />
+            <PopoverContent width="170px" borderColor="blue.800">
                 <PopoverHeader
-                    height="100px"
-                    backgroundColor={color}
+                    height="20px"
                     borderTopLeftRadius={5}
                     borderTopRightRadius={5}
-                    color="white"
                 >
-                    <Center height="100%">{color}</Center>
+                    <PopoverCloseButton color="black" />
                 </PopoverHeader>
                 <PopoverBody>
                     <SimpleGrid columns={5} spacing={2}>
-                        {colors.map((c) => (
-                            <Button
-                                key={c}
-                                aria-label={c}
-                                background={c}
+                        {colors.map((color) => (
+                            <TooltipButton
+                                key={color.name}
+                                label={color.name}
+                                background={color.value}
                                 height="22px"
                                 width="22px"
                                 padding={0}
                                 minWidth="unset"
+                                _hover={{ backgroundColor: color.value }}
                                 borderRadius={3}
                                 onClick={() => {
-                                    setColor(c);
-                                    onChange?.(c);
+                                    setColor(color);
+                                    onChange?.(color);
                                 }}
-                            ></Button>
+                            ></TooltipButton>
                         ))}
                     </SimpleGrid>
                 </PopoverBody>
