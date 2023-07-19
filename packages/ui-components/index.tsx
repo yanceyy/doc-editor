@@ -5,3 +5,5 @@ export { FontSelector } from "./FontSelector";
 export { ColorPicker } from "./ColorPicker";
 export { TooltipButton } from "./TooltipButton";
 export { FileHeader } from "./FileHeader";
+export { ZoomSlider } from "./ZoomSlider";
+export { FileFooter } from "./FileFooter";
