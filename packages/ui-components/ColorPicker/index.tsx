@@ -1,9 +1,7 @@
 import {
     Box,
     Button,
-    Center,
     Popover,
-    PopoverArrow,
     PopoverBody,
     PopoverCloseButton,
     PopoverContent,

@@ -1,4 +1,4 @@
-import { Box, Flex, Text } from "@chakra-ui/react";
+import { Box, Flex } from "@chakra-ui/react";
 
 interface FileHeaderProps {
     titleRow: React.ReactNode;
@@ -8,7 +8,14 @@ interface FileHeaderProps {
 
 export function FileHeader({ titleRow, menuRow, actionRow }: FileHeaderProps) {
     return (
-        <Flex as="header" direction="column" p={4}>
+        <Flex
+            as="header"
+            direction="column"
+            p={4}
+            position="fixed"
+            width="100%"
+            backgroundColor="white"
+        >
             <Flex>
                 <Box>{titleRow}</Box>
             </Flex>

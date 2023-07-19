@@ -20,7 +20,9 @@
         "framer-motion": "^10.12.22",
         "react": "^18.2.0",
         "react-dom": "^18.2.0",
-        "ui-components": "workspace:./packages/ui-components"
+        "ui-components": "workspace:./packages/ui-components",
+        "editor-core": "workspace:./packages/editor-core",
+        "shared": "workspace:./packages/shared"
     },
     "devDependencies": {
         "@commitlint/cli": "^17.6.6",
