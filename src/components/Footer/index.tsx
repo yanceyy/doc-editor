@@ -6,7 +6,7 @@ export function Footer() {
             leftMenu={null}
             rightMenu={
                 <ZoomSlider
-                    onChange={(value) => {
+                    onChange={() => {
                         //TODO: Need to fix this
                         //editor.zoom(value / 100);
                     }}
