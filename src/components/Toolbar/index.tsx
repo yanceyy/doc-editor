@@ -67,7 +67,7 @@ const colors = [
     { name: "transparent", value: "transparent" },
 ];
 
-export function ToolBar() {
+export function Toolbar() {
     return (
         <Flex justifyContent="center" gap="2">
             <Box p={4}>
