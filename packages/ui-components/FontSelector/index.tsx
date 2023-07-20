@@ -1,3 +1,4 @@
+import { Box, Tooltip } from "@chakra-ui/react";
 import {
     GroupBase,
     OptionBase,
@@ -52,8 +53,10 @@ export function FontSelector({ fontFamilyList, onChange }: FontSelectorProps) {
     });
 
     return (
-        <div style={{ fontFamily: selectedFont.value }}>
-            <Select {...selectProps} />
-        </div>
+        <Tooltip label="Select font">
+            <Box as="span" fontFamily={selectedFont.value} width={"200px"}>
+                <Select {...selectProps} />
+            </Box>
+        </Tooltip>
     );
 }

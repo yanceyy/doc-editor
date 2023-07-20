@@ -312,13 +312,13 @@ export class BoardCanvas {
     }
 
     async getImgBlobs() {
-        console.log(this.pageCanvasList.length);
-        const imgBolbs = this.pageCanvasList.map((canvas) => {
+        const imgBlobs = this.pageCanvasList.map((canvas) => {
             return canvasToBlob(canvas).then((blob) => ({
                 src: URL.createObjectURL(blob as Blob),
+                id: canvas.id,
             }));
         });
-        return Promise.all(imgBolbs);
+        return Promise.all(imgBlobs);
     }
 
     renderRow(
@@ -366,7 +366,7 @@ export class BoardCanvas {
                 ctx.fillRect(
                     renderWidth,
                     renderHeight,
-                    item.info.width,
+                    item.info.width + 1, // add 1px to avoid the gap between two adjacent elements
                     row.height
                 );
                 ctx.restore();

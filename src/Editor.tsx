@@ -7,7 +7,9 @@ import { editor } from "./editorInstance";
 
 export function Editor() {
     const canvasRef = useRef<HTMLDivElement>(null);
-    const [thumbnails, setThumbnails] = useState<{ src: string }[]>([]);
+    const [thumbnails, setThumbnails] = useState<{ src: string; id: string }[]>(
+        []
+    );
 
     useEffect(() => {
         window.addEventListener(
@@ -31,9 +33,10 @@ export function Editor() {
     useEffect(() => {
         // eslint-disable-next-line @typescript-eslint/no-misused-promises
         const debouncedRender = debounce(async () => {
-            const imgs = await editor.getImgBlobs();
-            setThumbnails(imgs);
+            const img = await editor.getImgBlobs();
+            setThumbnails(img);
         }, 800);
+
         editor.observe("render", debouncedRender);
 
         return () => {
