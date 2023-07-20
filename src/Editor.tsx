@@ -1,10 +1,13 @@
-import { useEffect, useRef } from "react";
+import { Carousel, Flex } from "ui-components";
+import { useEffect, useRef, useState } from "react";
 
-import { Flex } from "ui-components";
+import { HStack } from "@chakra-ui/react";
+import { debounce } from "shared";
 import { editor } from "./editorInstance";
 
 export function Editor() {
     const canvasRef = useRef<HTMLDivElement>(null);
+    const [thumbnails, setThumbnails] = useState<{ src: string }[]>([]);
 
     useEffect(() => {
         window.addEventListener(
@@ -26,6 +29,19 @@ export function Editor() {
     }, []);
 
     useEffect(() => {
+        // eslint-disable-next-line @typescript-eslint/no-misused-promises
+        const debouncedRender = debounce(async () => {
+            const imgs = await editor.getImgBlobs();
+            setThumbnails(imgs);
+        }, 800);
+        editor.observe("render", debouncedRender);
+
+        return () => {
+            editor.unObserve("render", debouncedRender);
+        };
+    }, []);
+
+    useEffect(() => {
         const canvas = canvasRef.current;
         if (canvas) {
             editor.setContainer(canvas);
@@ -38,19 +54,32 @@ export function Editor() {
     }, []);
 
     return (
-        <Flex
-            id="page-canvas"
-            p={4}
-            marginTop="70px"
-            paddingTop="30px"
-            paddingBottom="30px"
-            marginBottom="20px"
-            backgroundColor="gray.200"
-            justifyContent="center"
-            alignItems="center"
-            flexDirection="column"
-            minHeight={"100vh"}
-            ref={canvasRef}
-        ></Flex>
+        <HStack alignItems="start" marginBottom="20px" marginTop="70px">
+            <Carousel
+                alignItems="center"
+                justify="start"
+                width="250px"
+                maxHeight="100vh"
+                position={"sticky"}
+                top={"100px"}
+                margin={6}
+                spacing={8}
+                direction="column"
+                thumbnails={thumbnails}
+            />
+            <Flex
+                id="page-canvas"
+                p={4}
+                paddingTop="30px"
+                paddingBottom="30px"
+                backgroundColor="gray.200"
+                justifyContent="center"
+                alignItems="center"
+                flexDirection="column"
+                minHeight={"100vh"}
+                width={"100vw"}
+                ref={canvasRef}
+            />
+        </HStack>
     );
 }

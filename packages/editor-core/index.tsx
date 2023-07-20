@@ -1,5 +1,17 @@
 import { HistoryTracker, deepClone } from "shared";
 
+function canvasToBlob(canvas: HTMLCanvasElement) {
+    return new Promise((resolve, reject) => {
+        canvas.toBlob((blob) => {
+            if (blob) {
+                resolve(blob);
+            } else {
+                reject(new Error("Unable to convert canvas to Blob"));
+            }
+        });
+    });
+}
+
 interface DocEditorConfigOptions {
     pageWidth: number; // Paper width
     pageHeight: number; // Paper height
@@ -17,7 +29,13 @@ interface DocEditorConfigOptions {
     zoom: number; // Zoom ratio
 }
 
-type EventType = "update" | "delete" | "input" | "mousedown" | "rangeChange";
+type EventType =
+    | "update"
+    | "delete"
+    | "input"
+    | "mousedown"
+    | "rangeChange"
+    | "render";
 
 interface RowType {
     width: number;
@@ -241,6 +259,7 @@ export class BoardCanvas {
             this.computeRows();
         }
         this.renderPage();
+        this.notify("render", this);
     }
 
     // Delete all the canvas element from dom
@@ -290,6 +309,16 @@ export class BoardCanvas {
 
             renderHeight += row.height;
         });
+    }
+
+    async getImgBlobs() {
+        console.log(this.pageCanvasList.length);
+        const imgBolbs = this.pageCanvasList.map((canvas) => {
+            return canvasToBlob(canvas).then((blob) => ({
+                src: URL.createObjectURL(blob as Blob),
+            }));
+        });
+        return Promise.all(imgBolbs);
     }
 
     renderRow(
@@ -530,6 +559,7 @@ export class BoardCanvas {
     createPage(pageIndex: number) {
         const { pageWidth, pageHeight, pageMargin, dpr, zoom } = this.options;
         const canvas = document.createElement("canvas");
+        canvas.id = `page-${pageIndex}`;
         canvas.width = pageWidth * dpr * zoom;
         canvas.height = pageHeight * dpr * zoom;
         canvas.style.width = pageWidth * zoom + "px";
@@ -935,6 +965,14 @@ export class BoardCanvas {
             this.observers[type] = [];
         }
         this.observers[type]?.push(callback);
+    }
+
+    unObserve(type: EventType, callback: (context: BoardCanvas) => void) {
+        if (this.observers[type]) {
+            this.observers[type] = this.observers[type]?.filter(
+                (c) => c !== callback
+            );
+        }
     }
 
     notify(type: EventType, data: BoardCanvas) {

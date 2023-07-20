@@ -7,3 +7,4 @@ export { TooltipButton } from "./TooltipButton";
 export { FileHeader } from "./FileHeader";
 export { ZoomSlider } from "./ZoomSlider";
 export { FileFooter } from "./FileFooter";
+export { Carousel } from "./Carousel";
