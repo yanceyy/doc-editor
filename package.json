@@ -17,12 +17,12 @@
         "@mui/icons-material": "^5.14.0",
         "@mui/material": "^5.14.0",
         "chakra-react-select": "^4.6.0",
+        "editor-core": "workspace:./packages/editor-core",
         "framer-motion": "^10.12.22",
         "react": "^18.2.0",
         "react-dom": "^18.2.0",
-        "ui-components": "workspace:./packages/ui-components",
-        "editor-core": "workspace:./packages/editor-core",
-        "shared": "workspace:./packages/shared"
+        "shared": "workspace:./packages/shared",
+        "ui-components": "workspace:./packages/ui-components"
     },
     "devDependencies": {
         "@commitlint/cli": "^17.6.6",
@@ -40,6 +40,7 @@
         "husky": "^8.0.3",
         "prettier": "3.0.0",
         "typescript": "^5.0.2",
-        "vite": "^4.4.0"
+        "vite": "^4.4.0",
+        "vite-plugin-remove-console": "^2.1.1"
     }
 }
