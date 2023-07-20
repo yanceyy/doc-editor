@@ -62,8 +62,9 @@ export function Editor() {
                 alignItems="center"
                 justify="start"
                 width="250px"
-                maxHeight="100vh"
+                maxHeight="85vh"
                 position={"sticky"}
+                overflowY={"auto"}
                 top={"100px"}
                 margin={6}
                 spacing={8}

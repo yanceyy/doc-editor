@@ -89,3 +89,7 @@ editor.observe("input", (context: BoardCanvas) => {
 editor.observe("delete", (context: BoardCanvas) => {
     debouncedSaveToLocalStorageInstance("data", JSON.stringify(context.data));
 });
+
+editor.observe("pointerdown", (context: BoardCanvas) => {
+    console.log("pointerdown", context.cursorEl, context.cursorPositionIndex);
+});

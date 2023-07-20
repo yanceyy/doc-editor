@@ -35,7 +35,9 @@ type EventType =
     | "input"
     | "mousedown"
     | "rangeChange"
-    | "render";
+    | "render"
+    | "pointerdown"
+    | "paste";
 
 interface RowType {
     width: number;
@@ -207,6 +209,49 @@ export class BoardCanvas {
                 this.moveCursor("right");
                 return;
             }
+        });
+
+        document.body.addEventListener("copy", (event) => {
+            if (this.selectedRange.length === 0) {
+                return;
+            }
+            event.preventDefault();
+            const range = this.getSelectedRange();
+            const text = this.data
+                .slice(range[0], range[1] + 1)
+                .map((item) => item.value)
+                .join("");
+            event.clipboardData?.setData("text/plain", text);
+        });
+
+        document.body.addEventListener("paste", (event) => {
+            event.preventDefault();
+            const text = event.clipboardData?.getData("text/plain");
+            if (!text) {
+                return;
+            }
+            const range = this.getSelectedRange();
+            if (range.length > 0) {
+                this.delete();
+            }
+            const cur = this.positionList[this.cursorPositionIndex];
+            this.data.splice(
+                this.cursorPositionIndex + 1,
+                0,
+                ...text.split("").map((item) => {
+                    return {
+                        ...(cur || {}),
+                        value: item,
+                    };
+                })
+            );
+            this.render();
+            this.cursorPositionIndex += text.length;
+            this.computeAndRenderCursor(
+                this.cursorPositionIndex,
+                this.positionList[this.cursorPositionIndex].pageIndex
+            );
+            this.notify("paste", this);
         });
     }
 
@@ -758,6 +803,7 @@ export class BoardCanvas {
             if (this.cursorEl) this.cursorEl.style.display = "block";
             this.blinkCursor("0");
         }, 0);
+        this.notify("pointerdown", this);
     }
 
     hideCursor() {
