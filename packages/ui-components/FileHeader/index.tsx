@@ -11,18 +11,22 @@ export function FileHeader({ titleRow, menuRow, actionRow }: FileHeaderProps) {
         <Flex
             as="header"
             direction="column"
-            p={4}
             position="fixed"
             width="100%"
             backgroundColor="white"
+            top="0"
         >
-            <Flex>
-                <Box>{titleRow}</Box>
-            </Flex>
+            {titleRow && (
+                <Flex>
+                    <Box>{titleRow}</Box>
+                </Flex>
+            )}
 
-            <Flex>
-                <Box>{menuRow}</Box>
-            </Flex>
+            {menuRow && (
+                <Flex>
+                    <Box>{menuRow}</Box>
+                </Flex>
+            )}
 
             <Flex align="center" justify="center">
                 <Box>{actionRow}</Box>

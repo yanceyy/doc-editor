@@ -69,6 +69,7 @@ export function ColorPicker({
                                 background={color.value}
                                 height="22px"
                                 width="22px"
+                                border="2px solid black"
                                 padding={0}
                                 minWidth="unset"
                                 _hover={{ backgroundColor: color.value }}

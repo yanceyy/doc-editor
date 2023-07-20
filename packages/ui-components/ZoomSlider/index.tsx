@@ -9,7 +9,11 @@ import {
     useControllableState,
 } from "@chakra-ui/react";
 
-export function ZoomSlider() {
+interface ZoomSliderProps {
+    onChange?: (value: number) => void;
+}
+
+export function ZoomSlider({ onChange }: ZoomSliderProps) {
     const [value, setValue] = useControllableState({ defaultValue: 100 });
     return (
         <HStack spacing="6px">
@@ -24,7 +28,10 @@ export function ZoomSlider() {
             <Slider
                 width="150px"
                 aria-label="Zoom document"
-                onChange={setValue}
+                onChange={(e) => {
+                    setValue(e);
+                    onChange?.(e);
+                }}
                 value={value}
                 min={50}
                 max={200}

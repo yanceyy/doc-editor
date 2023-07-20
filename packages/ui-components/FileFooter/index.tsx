@@ -15,6 +15,7 @@ export function FileFooter({ leftMenu, rightMenu }: FileFooterProps) {
             justifyContent="space-between"
             bottom="0"
             width="100%"
+            height="30px"
             backgroundColor="white"
         >
             <Flex>

@@ -4,7 +4,6 @@ import {
     Flex,
     FontSelector,
     Stack,
-    Tooltip,
     TooltipButton,
 } from "ui-components";
 import {
@@ -13,10 +12,14 @@ import {
     FormatItalic,
     FormatUnderlined,
     Mode,
+    Redo,
     StrikethroughS,
     TextDecrease,
     TextIncrease,
+    Undo,
 } from "@mui/icons-material";
+
+import { editor } from "../../editorInstance";
 
 const fontFamilyList = [
     {
@@ -69,29 +72,82 @@ export function ToolBar() {
         <Flex justifyContent="center" gap="2">
             <Box p={4}>
                 <Stack direction="row" spacing={4} align="center">
-                    <FontSelector fontFamilyList={fontFamilyList} />
-                    <TooltipButton label="strike line">
+                    <TooltipButton
+                        label="Undo"
+                        onClick={() => {
+                            editor.undo();
+                        }}
+                    >
+                        <Undo />
+                    </TooltipButton>
+                    <TooltipButton
+                        label="Redo"
+                        onClick={() => {
+                            editor.redo();
+                        }}
+                    >
+                        <Redo />
+                    </TooltipButton>
+                    <FontSelector
+                        fontFamilyList={fontFamilyList}
+                        onChange={(font) => {
+                            editor.updateSelectedText("fontfamily", font.value);
+                        }}
+                    />
+                    <TooltipButton
+                        label="Increase font size"
+                        onClick={() => {
+                            editor.updateSelectedText("increaseFontSize");
+                        }}
+                    >
                         <TextIncrease />
                     </TooltipButton>
-                    <TooltipButton label="strike line">
+                    <TooltipButton
+                        label="Decrease font size"
+                        onClick={() => {
+                            editor.updateSelectedText("decreaseFontSize");
+                        }}
+                    >
                         <TextDecrease />
                     </TooltipButton>
-                    <TooltipButton label="strike line">
-                        <FormatBold />
+                    <TooltipButton label="Bold">
+                        <FormatBold
+                            onClick={() => {
+                                editor.updateSelectedText("bold");
+                            }}
+                        />
                     </TooltipButton>
-                    <TooltipButton label="strike line">
+                    <TooltipButton
+                        label="Italic"
+                        onClick={() => {
+                            editor.updateSelectedText("italic");
+                        }}
+                    >
                         <FormatItalic />
                     </TooltipButton>
-                    <TooltipButton label="strike line">
+                    <TooltipButton
+                        label="underline"
+                        onClick={() => {
+                            editor.updateSelectedText("underline");
+                        }}
+                    >
                         <FormatUnderlined />
                     </TooltipButton>
-                    <TooltipButton label="strike line">
+                    <TooltipButton
+                        label="strike through line"
+                        onClick={() => {
+                            editor.updateSelectedText("lineThrough");
+                        }}
+                    >
                         <StrikethroughS />
                     </TooltipButton>
                     <ColorPicker
                         colors={colors}
                         icon={FontDownload}
                         label="Text color"
+                        onChange={(color) => {
+                            editor.updateSelectedText("color", color.value);
+                        }}
                     />
                     <ColorPicker
                         colors={colors}
@@ -100,6 +156,12 @@ export function ToolBar() {
                         defaultColor={{
                             name: "transparent",
                             value: "transparent",
+                        }}
+                        onChange={(color) => {
+                            editor.updateSelectedText(
+                                "background",
+                                color.value
+                            );
                         }}
                     />
                 </Stack>
