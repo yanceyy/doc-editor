@@ -823,8 +823,12 @@ export class BoardCanvas {
     focus() {
         if (!this.textareaEl) {
             this.textareaEl = document.createElement("textarea");
-            this.textareaEl.style.position = "fixed";
-            this.textareaEl.style.left = "-99999px";
+            this.textareaEl.style.position = "absolute";
+            this.textareaEl.style.opacity = "0";
+            this.textareaEl.style.pointerEvents = "none";
+            this.textareaEl.style.width = "0";
+            this.textareaEl.style.height = "0";
+            this.textareaEl.style.overflow = "hidden";
             this.textareaEl.addEventListener("input", this.onInput.bind(this));
             this.textareaEl.addEventListener("compositionstart", () => {
                 this.isCompositing = true;
@@ -839,8 +843,14 @@ export class BoardCanvas {
             this.textareaEl.addEventListener("blur", () => {
                 this.hideCursor();
             });
-            document.body.appendChild(this.textareaEl);
+            // Add to the same container as the pointer cursor
+            this.container.appendChild(this.textareaEl);
         }
+
+        this.textareaEl.value = "";
+        // when focus, set the textarea position to the cursor position
+        this.textareaEl.style.left = this.cursorEl!.style.left;
+        this.textareaEl.style.top = this.cursorEl!.style.top;
         this.textareaEl.focus();
     }
 
