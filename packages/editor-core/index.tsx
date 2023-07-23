@@ -1,3 +1,11 @@
+import type {
+    DocEditorConfigOptions,
+    Element,
+    ElementAttribute,
+    ElementType,
+    EventType,
+    Row,
+} from "shared/Types";
 import { HistoryTracker, deepClone } from "shared";
 
 function canvasToBlob(canvas: HTMLCanvasElement) {
@@ -12,74 +20,13 @@ function canvasToBlob(canvas: HTMLCanvasElement) {
     });
 }
 
-interface DocEditorConfigOptions {
-    pageWidth: number; // Paper width
-    pageHeight: number; // Paper height
-    pagePadding: number[]; // Paper padding, respectively: top, right, bottom, left
-    pageMargin: number; // Margin between pages
-    pagePaddingIndicatorSize: number; // Size of the paper padding indicator, which is the side length of the four right angles
-    pagePaddingIndicatorColor: string; // Color of the paper padding indicator, which is the color of the four right angles
-    color: string; // Text color
-    fontSize: number; // Font size
-    fontFamily: string; // Font family
-    lineHeight: number; // Line height, in multiples
-    rangeOpacity: number; // Selection opacity
-    rangeColor: string; // Selection color
-    dpr: number; // Device pixel ratio
-    zoom: number; // Zoom ratio
-}
-
-type EventType =
-    | "update"
-    | "delete"
-    | "input"
-    | "mousedown"
-    | "rangeChange"
-    | "render"
-    | "pointerdown"
-    | "paste";
-
-interface RowType {
-    width: number;
-    height: number;
-    originHeight: number;
-    descent: number;
-    elementList: ComputedElementType[];
-}
-
-export type ElementType = {
-    value: string; // Text content
-    size?: number; // Font size
-    fontfamily?: string; // Font family
-    font?: string; // Combined font family and size
-    bold?: boolean; // Bold text
-    italic?: boolean; // Italic text
-    underline?: boolean; // Underlined text
-    lineThrough?: boolean; // Strikethrough text
-    background?: string; // Background color
-    color?: string; // Text color
-    lineHeight?: number; // Line height multiplier
-};
-
-export interface ComputedElementType extends ElementType {
-    info: {
-        width: number;
-        height: number;
-    };
-}
-
-export type ElementAttribute =
-    | Exclude<keyof ElementType, "value">
-    | "increaseFontSize"
-    | "decreaseFontSize";
-
 export class BoardCanvas {
     container: HTMLElement;
-    data: ElementType[];
+    data: Element[];
     options: DocEditorConfigOptions;
     pageCanvasList: HTMLCanvasElement[];
     pageCanvasCtxList: CanvasRenderingContext2D[];
-    rows: RowType[];
+    rows: Row[];
     observers: Partial<Record<EventType, ((context: BoardCanvas) => void)[]>>;
     cursorPositionIndex: number;
     selectedRange: number[];
@@ -103,7 +50,7 @@ export class BoardCanvas {
     cursorTimer: number | null;
     cursorEl: HTMLDivElement | null;
     textareaEl: HTMLTextAreaElement | null;
-    history: HistoryTracker<ElementType[]>;
+    history: HistoryTracker<Element[]>;
     isMousedown: boolean;
     isCompositing: boolean;
     mousemoveTimer: number | null;
@@ -112,13 +59,12 @@ export class BoardCanvas {
         rangeChange: null | ((range: number[]) => void);
     };
 
-    constructor(container: HTMLElement, data: ElementType[], options = {}) {
+    constructor(container: HTMLElement, data: Element[], options = {}) {
         this.container = container; // container which contains the created canvas pages
         this.data = data; // data to be rendered on the page
 
         // Preserve the history of the data so we can undo/redo
         this.history = new HistoryTracker();
-        this.history.add(deepClone(this.data));
 
         this.options = Object.assign(
             {
@@ -147,15 +93,6 @@ export class BoardCanvas {
         );
 
         this.observers = {};
-
-        const pushHistoryEvent = (context: BoardCanvas) => {
-            this.history.add(deepClone(context.data));
-        };
-
-        this.observe("update", pushHistoryEvent);
-        this.observe("delete", pushHistoryEvent);
-        this.observe("input", pushHistoryEvent);
-
         this.pageCanvasList = [];
         this.pageCanvasCtxList = [];
         this.rows = [];
@@ -174,6 +111,29 @@ export class BoardCanvas {
             rangeChange: null,
         };
 
+        this.attachEvents();
+        this.attachHistoryObserver();
+    }
+
+    attachHistoryObserver() {
+        this.history.add(deepClone(this.data));
+
+        const pushHistoryEvent = (context: BoardCanvas) => {
+            console.log(context.data);
+            this.history.add(deepClone(context.data));
+        };
+
+        for (const event of [
+            "update",
+            "input",
+            "paste",
+            "delete",
+        ] as EventType[]) {
+            this.observe(event, pushHistoryEvent);
+        }
+    }
+
+    attachEvents() {
         document.body.addEventListener(
             "mousemove",
             this.onMousemove.bind(this)
@@ -235,6 +195,7 @@ export class BoardCanvas {
                 this.delete();
             }
             const cur = this.positionList[this.cursorPositionIndex];
+            //Todo: support paste rich text like bold, italic, underline, images
             this.data.splice(
                 this.cursorPositionIndex + 1,
                 0,
@@ -242,6 +203,7 @@ export class BoardCanvas {
                     return {
                         ...(cur || {}),
                         value: item,
+                        type: "text" as ElementType,
                     };
                 })
             );
@@ -369,7 +331,7 @@ export class BoardCanvas {
     renderRow(
         ctx: CanvasRenderingContext2D,
         renderHeight: number,
-        row: RowType,
+        row: Row,
         pageIndex: number,
         rowIndex: number
     ) {
@@ -514,8 +476,9 @@ export class BoardCanvas {
         const canvas = document.createElement("canvas");
         const ctx = canvas.getContext("2d")!;
 
-        const rows: RowType[] = [];
+        const rows: Row[] = [];
         rows.push({
+            type: "text",
             width: 0,
             height: 0,
             originHeight: 0, // height of the text without line height
@@ -581,6 +544,7 @@ export class BoardCanvas {
                 curRow.descent = Math.max(curRow.descent, info.descent);
             } else {
                 rows.push({
+                    type: "text",
                     width: info.width,
                     height: info.height * actLineHeight,
                     originHeight: info.height,
@@ -593,7 +557,7 @@ export class BoardCanvas {
     }
 
     // get font style on canvas
-    getFontStr(element: ElementType) {
+    getFontStr(element: Element) {
         const { fontSize, fontFamily } = this.options;
         return `${element.italic ? "italic " : ""} ${
             element.bold ? "bold " : ""
@@ -875,6 +839,7 @@ export class BoardCanvas {
                     return {
                         ...(cur || {}),
                         value: item,
+                        type: "text" as ElementType,
                     };
                 })
             );
@@ -951,9 +916,10 @@ export class BoardCanvas {
                             item[attrName] = !item[attrName];
                             break;
                         }
-                        default: {
-                            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-                            item[attrName] = attrValue;
+                        case "color":
+                        case "background": {
+                            item[attrName] = attrValue as string;
+                            break;
                         }
                     }
                 }
@@ -968,6 +934,7 @@ export class BoardCanvas {
     newLine() {
         this.data.splice(this.cursorPositionIndex + 1, 0, {
             value: "\n",
+            type: "text" as ElementType,
         });
         this.render();
         this.cursorPositionIndex++;
