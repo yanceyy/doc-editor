@@ -3,31 +3,20 @@ import type {
     Element,
     ElementAttribute,
     ElementType,
-    EventType,
     Row,
 } from "shared/Types";
-import { HistoryTracker, deepClone } from "shared/utils";
+import { HistoryTracker, canvasToBlob, deepClone } from "shared/utils";
 
-function canvasToBlob(canvas: HTMLCanvasElement) {
-    return new Promise((resolve, reject) => {
-        canvas.toBlob((blob) => {
-            if (blob) {
-                resolve(blob);
-            } else {
-                reject(new Error("Unable to convert canvas to Blob"));
-            }
-        });
-    });
-}
+import { EventEmitter } from "shared/bases";
 
-export class BoardCanvas {
+export class BoardCanvas extends EventEmitter<BoardCanvas> {
     container: HTMLElement;
     data: Element[];
     options: DocEditorConfigOptions;
     pageCanvasList: HTMLCanvasElement[];
     pageCanvasCtxList: CanvasRenderingContext2D[];
     rows: Row[];
-    observers: Partial<Record<EventType, ((context: BoardCanvas) => void)[]>>;
+
     cursorPositionIndex: number;
     selectedRange: number[];
     positionList: {
@@ -60,6 +49,7 @@ export class BoardCanvas {
     };
 
     constructor(container: HTMLElement, data: Element[], options = {}) {
+        super();
         this.container = container; // container which contains the created canvas pages
         this.data = data; // data to be rendered on the page
 
@@ -92,7 +82,6 @@ export class BoardCanvas {
             options
         );
 
-        this.observers = {};
         this.pageCanvasList = [];
         this.pageCanvasCtxList = [];
         this.rows = [];
@@ -123,14 +112,7 @@ export class BoardCanvas {
             this.history.add(deepClone(context.data));
         };
 
-        for (const event of [
-            "update",
-            "input",
-            "paste",
-            "delete",
-        ] as EventType[]) {
-            this.observe(event, pushHistoryEvent);
-        }
+        this.observe(["update", "input", "paste", "delete"], pushHistoryEvent);
     }
 
     attachEvents() {
@@ -980,28 +962,6 @@ export class BoardCanvas {
             x: x + canvas.offsetLeft,
             y: y + canvas.offsetTop,
         };
-    }
-
-    // TODO: allow pass eventList string like 'hover|click'
-    observe(type: EventType, callback: (context: BoardCanvas) => void) {
-        if (!this.observers[type]) {
-            this.observers[type] = [];
-        }
-        this.observers[type]?.push(callback);
-    }
-
-    unObserve(type: EventType, callback: (context: BoardCanvas) => void) {
-        if (this.observers[type]) {
-            this.observers[type] = this.observers[type]?.filter(
-                (c) => c !== callback
-            );
-        }
-    }
-
-    notify(type: EventType, data: BoardCanvas) {
-        this.observers[type]?.forEach((item) => {
-            item.call(this, data);
-        });
     }
 
     // Paint page padding indicators

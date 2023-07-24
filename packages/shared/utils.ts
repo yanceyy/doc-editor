@@ -104,3 +104,15 @@ export class HistoryTracker<T> {
         return this.FixedSizedArray.get(this.currentHistoryIndex);
     }
 }
+
+export function canvasToBlob(canvas: HTMLCanvasElement) {
+    return new Promise((resolve, reject) => {
+        canvas.toBlob((blob) => {
+            if (blob) {
+                resolve(blob);
+            } else {
+                reject(new Error("Unable to convert canvas to Blob"));
+            }
+        });
+    });
+}
