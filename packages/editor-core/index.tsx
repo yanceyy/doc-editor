@@ -116,7 +116,6 @@ export class BoardCanvas extends EventEmitter<BoardCanvas> {
         this.history.add(deepClone(this.data));
 
         const pushHistoryEvent = (context: BoardCanvas) => {
-            console.log(context.data);
             this.history.add(deepClone(context.data));
         };
 
@@ -145,6 +144,15 @@ export class BoardCanvas extends EventEmitter<BoardCanvas> {
             if ((isCommandPressed || isControlPressed) && isZPressed) {
                 e.preventDefault();
                 this.undo();
+                return;
+            }
+
+            // Select All
+            const isAPressed = e.key === "a" || e.key === "A";
+            if ((isCommandPressed || isControlPressed) && isAPressed) {
+                this.selectedRange = [-1, this.data.length - 1];
+                this.cursorPositionIndex = -1;
+                this.render();
                 return;
             }
 
@@ -903,6 +911,7 @@ export class BoardCanvas extends EventEmitter<BoardCanvas> {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     updateSelectedText(attrName: ElementAttribute, attrValue?: any) {
+        console.log(attrName, attrValue, this.cursorPositionIndex);
         if (this.cursorPositionIndex < 0) {
             const range = this.getSelectedRange();
             if (range.length > 0) {
