@@ -113,13 +113,14 @@ export class BoardCanvas extends EventEmitter<BoardCanvas> {
     }
 
     setZoom(ratio: number) {
-        const { dpr, zoom } = this.options;
+        const { dpr } = this.options;
         this.options.zoom = ratio;
         this.pageCanvasList.forEach((canvas) => {
             this.setCanvasProperty(canvas);
         });
+
         this.pageCanvasCtxList.forEach((ctx) => {
-            ctx.scale(dpr * zoom, dpr * zoom);
+            ctx.scale(dpr * ratio, dpr * ratio);
         });
 
         this.render();

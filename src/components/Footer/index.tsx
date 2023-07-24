@@ -9,7 +9,6 @@ export function Footer() {
             rightMenu={
                 <ZoomSlider
                     onChange={(value) => {
-                        //TODO: Need to fix this
                         editor.setZoom(value / 100);
                     }}
                 />
