@@ -2,7 +2,7 @@ import { Carousel, Flex } from "ui-components";
 import { useEffect, useRef, useState } from "react";
 
 import { HStack } from "@chakra-ui/react";
-import { debounce } from "shared";
+import { debounce } from "shared/utils";
 import { editor } from "./editorInstance";
 
 export function Editor() {
@@ -16,10 +16,7 @@ export function Editor() {
             "keydown",
             function (event) {
                 // Check if the keydown event is either ctrl+s (Windows/Linux) or command+s (macOS)
-                if (
-                    (event.keyCode == 83 && (event.ctrlKey || event.metaKey)) ||
-                    event.keyCode == 19
-                ) {
+                if (event.code == "KeyS" && (event.ctrlKey || event.metaKey)) {
                     event.preventDefault();
                     // Perhaps alert the user that they can't use that keyboard shortcut
                     // alert("The 'save' keyboard shortcut has been disabled.");

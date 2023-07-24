@@ -6,7 +6,7 @@ import type {
     EventType,
     Row,
 } from "shared/Types";
-import { HistoryTracker, deepClone } from "shared";
+import { HistoryTracker, deepClone } from "shared/utils";
 
 function canvasToBlob(canvas: HTMLCanvasElement) {
     return new Promise((resolve, reject) => {
@@ -486,7 +486,7 @@ export class BoardCanvas {
             elementList: [],
         });
         this.data.forEach((item) => {
-            const { value } = item;
+            const { value, type } = item;
 
             let { lineHeight: actLineHeight } = item;
             actLineHeight = actLineHeight || lineHeight;
@@ -544,7 +544,7 @@ export class BoardCanvas {
                 curRow.descent = Math.max(curRow.descent, info.descent);
             } else {
                 rows.push({
-                    type: "text",
+                    type,
                     width: info.width,
                     height: info.height * actLineHeight,
                     originHeight: info.height,
