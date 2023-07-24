@@ -217,7 +217,8 @@ export class BoardCanvas extends EventEmitter<BoardCanvas> {
 
     moveCursor(direction: "left" | "right") {
         if (direction === "left") {
-            if (this.cursorPositionIndex > 0) {
+            // when cursorPositionIndex === -1, the cursor is at the beginning of the page
+            if (this.cursorPositionIndex >= 0) {
                 this.cursorPositionIndex--;
                 const position = this.positionList[this.cursorPositionIndex];
                 this.computeAndRenderCursor(
