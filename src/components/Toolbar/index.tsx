@@ -1,9 +1,8 @@
 import {
-    Box,
     ColorPicker,
     Flex,
     FontSelector,
-    Stack,
+    HStack,
     TooltipButton,
 } from "ui-components";
 import {
@@ -92,105 +91,106 @@ export function Toolbar() {
     }, []);
 
     return (
-        <Flex justifyContent="center" gap="2">
-            <Box p={4}>
-                <Stack direction="row" spacing={4} align="center">
-                    <TooltipButton
-                        label="Undo"
+        <Flex justifyContent="center" gap="2" flexWrap="wrap" p={4}>
+            <HStack>
+                <TooltipButton
+                    label="Undo"
+                    onClick={() => {
+                        editor.undo();
+                    }}
+                >
+                    <Undo />
+                </TooltipButton>
+                <TooltipButton
+                    label="Redo"
+                    onClick={() => {
+                        editor.redo();
+                    }}
+                >
+                    <Redo />
+                </TooltipButton>
+            </HStack>
+            <FontSelector
+                fontFamilyList={fontFamilyList}
+                onChange={(font) => {
+                    editor.updateSelectedText("fontfamily", font.value);
+                }}
+            />
+            <HStack>
+                <TooltipButton
+                    label="Increase font size"
+                    onClick={() => {
+                        editor.updateSelectedText("increaseFontSize");
+                    }}
+                >
+                    <TextIncrease />
+                </TooltipButton>
+                <TooltipButton
+                    label="Decrease font size"
+                    onClick={() => {
+                        editor.updateSelectedText("decreaseFontSize");
+                    }}
+                >
+                    <TextDecrease />
+                </TooltipButton>
+            </HStack>
+            <HStack>
+                <TooltipButton label="Bold">
+                    <FormatBold
                         onClick={() => {
-                            editor.undo();
-                        }}
-                    >
-                        <Undo />
-                    </TooltipButton>
-                    <TooltipButton
-                        label="Redo"
-                        onClick={() => {
-                            editor.redo();
-                        }}
-                    >
-                        <Redo />
-                    </TooltipButton>
-                    <FontSelector
-                        fontFamilyList={fontFamilyList}
-                        onChange={(font) => {
-                            editor.updateSelectedText("fontfamily", font.value);
+                            editor.updateSelectedText("bold");
                         }}
                     />
-                    <TooltipButton
-                        label="Increase font size"
-                        onClick={() => {
-                            editor.updateSelectedText("increaseFontSize");
-                        }}
-                    >
-                        <TextIncrease />
-                    </TooltipButton>
-                    <TooltipButton
-                        label="Decrease font size"
-                        onClick={() => {
-                            editor.updateSelectedText("decreaseFontSize");
-                        }}
-                    >
-                        <TextDecrease />
-                    </TooltipButton>
-                    <TooltipButton label="Bold">
-                        <FormatBold
-                            onClick={() => {
-                                editor.updateSelectedText("bold");
-                            }}
-                        />
-                    </TooltipButton>
-                    <TooltipButton
-                        label="Italic"
-                        onClick={() => {
-                            editor.updateSelectedText("italic");
-                        }}
-                    >
-                        <FormatItalic />
-                    </TooltipButton>
-                    <TooltipButton
-                        label="underline"
-                        onClick={() => {
-                            editor.updateSelectedText("underline");
-                        }}
-                    >
-                        <FormatUnderlined />
-                    </TooltipButton>
-                    <TooltipButton
-                        label="strike through line"
-                        onClick={() => {
-                            editor.updateSelectedText("lineThrough");
-                        }}
-                    >
-                        <StrikethroughS />
-                    </TooltipButton>
-                    <ColorPicker
-                        colors={colors}
-                        icon={FontDownload}
-                        label="Text color"
-                        onChange={(color) => {
-                            editor.updateSelectedText("color", color.value);
-                        }}
-                        ref={textColorPickerRef}
-                    />
-                    <ColorPicker
-                        colors={colors}
-                        icon={Mode}
-                        label="highlight color"
-                        defaultColor={{
-                            name: "transparent",
-                            value: "transparent",
-                        }}
-                        onChange={(color) => {
-                            editor.updateSelectedText(
-                                "background",
-                                color.value
-                            );
-                        }}
-                        ref={backgroundColorPickerRef}
-                    />
-                </Stack>
-            </Box>
+                </TooltipButton>
+                <TooltipButton
+                    label="Italic"
+                    onClick={() => {
+                        editor.updateSelectedText("italic");
+                    }}
+                >
+                    <FormatItalic />
+                </TooltipButton>
+                <TooltipButton
+                    label="underline"
+                    onClick={() => {
+                        editor.updateSelectedText("underline");
+                    }}
+                >
+                    <FormatUnderlined />
+                </TooltipButton>
+                <TooltipButton
+                    label="strike through line"
+                    onClick={() => {
+                        editor.updateSelectedText("lineThrough");
+                    }}
+                >
+                    <StrikethroughS />
+                </TooltipButton>
+            </HStack>
+            <HStack>
+                <ColorPicker
+                    colors={colors}
+                    icon={FontDownload}
+                    label="Text color"
+                    onChange={(color) => {
+                        editor.updateSelectedText("color", color.value);
+                    }}
+                    ref={textColorPickerRef}
+                />
+                <ColorPicker
+                    colors={colors}
+                    icon={Mode}
+                    label="highlight color"
+                    defaultColor={{
+                        name: "transparent",
+                        value: "transparent",
+                    }}
+                    onChange={(color) => {
+                        editor.updateSelectedText("background", color.value);
+                    }}
+                    ref={backgroundColorPickerRef}
+                />
+            </HStack>
         </Flex>
     );
 }

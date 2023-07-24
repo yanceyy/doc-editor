@@ -934,7 +934,6 @@ export class BoardCanvas extends EventEmitter<BoardCanvas> {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     updateSelectedText(attrName: ElementAttribute, attrValue?: any) {
-        console.log(attrName, attrValue, this.cursorPositionIndex);
         if (this.cursorPositionIndex < 0) {
             const range = this.getSelectedRange();
             if (range.length > 0) {
@@ -965,7 +964,8 @@ export class BoardCanvas extends EventEmitter<BoardCanvas> {
                             break;
                         }
                         case "color":
-                        case "background": {
+                        case "background":
+                        case "fontfamily": {
                             item[attrName] = attrValue as string;
                             break;
                         }

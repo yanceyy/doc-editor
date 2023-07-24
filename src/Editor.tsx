@@ -1,7 +1,7 @@
 import { Carousel, Flex } from "ui-components";
+import { HStack, useMediaQuery } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
 
-import { HStack } from "@chakra-ui/react";
 import { debounce } from "shared/utils";
 import { editor } from "./editorInstance";
 
@@ -10,6 +10,9 @@ export function Editor() {
     const [thumbnails, setThumbnails] = useState<{ src: string; id: string }[]>(
         []
     );
+
+    // single media query with no options
+    const [isLargerThan1024] = useMediaQuery("(min-width: 1024px)");
 
     useEffect(() => {
         window.addEventListener(
@@ -55,19 +58,21 @@ export function Editor() {
 
     return (
         <HStack alignItems="start" marginBottom="20px" marginTop="70px">
-            <Carousel
-                alignItems="center"
-                justify="start"
-                width="250px"
-                maxHeight="85vh"
-                position={"sticky"}
-                overflowY={"auto"}
-                top={"100px"}
-                margin={6}
-                spacing={8}
-                direction="column"
-                thumbnails={thumbnails}
-            />
+            {isLargerThan1024 && (
+                <Carousel
+                    alignItems="center"
+                    justify="start"
+                    width="250px"
+                    maxHeight="85vh"
+                    position={"sticky"}
+                    overflowY={"auto"}
+                    top={"100px"}
+                    margin={6}
+                    spacing={8}
+                    direction="column"
+                    thumbnails={thumbnails}
+                />
+            )}
             <Flex
                 id="page-canvas"
                 p={4}
