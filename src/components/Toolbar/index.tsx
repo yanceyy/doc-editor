@@ -4,8 +4,10 @@ import {
     FontSelector,
     HStack,
     TooltipButton,
+    useToast,
 } from "ui-components";
 import {
+    FileDownload,
     FontDownload,
     FormatBold,
     FormatItalic,
@@ -17,10 +19,11 @@ import {
     TextIncrease,
     Undo,
 } from "@mui/icons-material";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { ColorPickerHandle } from "ui-components/ColorPicker";
 import { editor } from "../../editorInstance";
+import { pdfExport } from "extensions/pdfExport";
 
 const fontFamilyList = [
     {
@@ -70,6 +73,8 @@ const colors = [
 export function Toolbar() {
     const textColorPickerRef = useRef<ColorPickerHandle>(null);
     const backgroundColorPickerRef = useRef<ColorPickerHandle>(null);
+    const [isDownloading, setIsDownloading] = useState<boolean>(false);
+    const toast = useToast();
 
     useEffect(() => {
         editor.observe(["moveCursor", "pointerdown"], (ed) => {
@@ -191,6 +196,53 @@ export function Toolbar() {
                     ref={backgroundColorPickerRef}
                 />
             </HStack>
+            <TooltipButton
+                label="Download PDF"
+                onClick={() => {
+                    if (isDownloading) {
+                        toast({
+                            title: "Is generating the PDF",
+                            status: "warning",
+                            duration: 2000,
+                            isClosable: true,
+                            position: "top",
+                        });
+                    } else {
+                        setIsDownloading(true);
+                        pdfExport(editor)
+                            .then(() => {
+                                toast({
+                                    title: "Successfully downloaded",
+                                    status: "success",
+                                    duration: 2000,
+                                    isClosable: true,
+                                    position: "top",
+                                });
+                            })
+                            .catch(() => {
+                                toast({
+                                    title: "There is a error when processing",
+                                    status: "error",
+                                    duration: 2000,
+                                    isClosable: true,
+                                    position: "top",
+                                });
+                            })
+                            .finally(() => {
+                                setIsDownloading(false);
+                            });
+                        toast({
+                            title: "Is generating the PDF",
+                            status: "warning",
+                            duration: 2000,
+                            isClosable: true,
+                            position: "top",
+                        });
+                    }
+                }}
+            >
+                <FileDownload />
+            </TooltipButton>
         </Flex>
     );
 }

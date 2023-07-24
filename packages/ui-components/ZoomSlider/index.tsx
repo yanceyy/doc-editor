@@ -64,6 +64,7 @@ export function ZoomSlider({ onChange }: ZoomSliderProps) {
                 <MenuList textAlign="center">
                     {[50, 75, 100, 150, 200].map((value) => (
                         <MenuItem
+                            key={value}
                             textAlign="center"
                             onClick={() => combineAction(value)}
                         >
