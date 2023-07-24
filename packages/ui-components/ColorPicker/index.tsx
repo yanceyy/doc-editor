@@ -10,14 +10,11 @@ import {
     SimpleGrid,
     Tooltip,
 } from "@chakra-ui/react";
-import React, { useState } from "react";
+import React, { forwardRef, useImperativeHandle, useState } from "react";
 
+import type { Color } from "shared/Types";
 import { TooltipButton } from "../TooltipButton";
 
-interface Color {
-    name: string;
-    value: string;
-}
 interface ColorPickerProps {
     colors: Color[];
     onChange?: (color: Color) => void;
@@ -26,19 +23,24 @@ interface ColorPickerProps {
     defaultColor?: Color;
 }
 
-export function ColorPicker({
-    colors,
-    onChange,
-    label,
-    defaultColor,
-    icon: Icon,
-}: ColorPickerProps) {
+export interface ColorPickerHandle {
+    setColor: (color: Color) => void;
+}
+
+function _ColorPicker(
+    { colors, onChange, label, defaultColor, icon: Icon }: ColorPickerProps,
+    ref: React.Ref<unknown>
+) {
     const [color, setColor] = useState<Color>(
         defaultColor || {
             name: "black",
             value: "black",
         }
     );
+
+    useImperativeHandle(ref, () => ({
+        setColor,
+    }));
 
     return (
         <Popover>
@@ -86,3 +88,7 @@ export function ColorPicker({
         </Popover>
     );
 }
+
+export const ColorPicker = forwardRef<ColorPickerHandle, ColorPickerProps>(
+    _ColorPicker
+);

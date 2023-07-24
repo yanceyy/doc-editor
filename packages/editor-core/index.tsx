@@ -10,6 +10,17 @@ import { HistoryTracker, canvasToBlob, deepClone } from "shared/utils";
 import { EventEmitter } from "shared/bases";
 
 export class BoardCanvas extends EventEmitter<BoardCanvas> {
+    defaultFontStyle = {
+        fontSize: 12, // Font size
+        fontFamily: "Arial", // Font family
+        color: "#000000", // Text color
+        bold: false, // Bold
+        italic: false, // Italic
+        underline: false, // Underline
+        lineThrough: false, // Strikethrough
+        background: "", // Background color
+    };
+
     container: HTMLElement;
     data: Element[];
     options: DocEditorConfigOptions;
@@ -61,10 +72,6 @@ export class BoardCanvas extends EventEmitter<BoardCanvas> {
                 pageWidth: 816, // Paper width
                 pageHeight: 1056, // Paper height
 
-                fontSize: 12, // Font size
-                fontFamily: "Arial", // Font family
-                color: "#000000", // Text color
-
                 lineHeight: 1.5, // Line height, as a multiple
 
                 pagePadding: [100, 120, 100, 120], // Paper padding, in the order: Top, Right, Bottom, Left
@@ -79,6 +86,7 @@ export class BoardCanvas extends EventEmitter<BoardCanvas> {
                 dpr: window.devicePixelRatio,
                 zoom: 1,
             },
+            this.defaultFontStyle,
             options
         );
 
@@ -208,6 +216,7 @@ export class BoardCanvas extends EventEmitter<BoardCanvas> {
                     this.cursorPositionIndex,
                     position ? position.pageIndex : 0
                 );
+                this.notify("moveCursor", this);
             }
         } else {
             if (this.cursorPositionIndex < this.positionList.length - 1) {
@@ -217,6 +226,7 @@ export class BoardCanvas extends EventEmitter<BoardCanvas> {
                     this.cursorPositionIndex,
                     position ? position.pageIndex : 0
                 );
+                this.notify("moveCursor", this);
             }
         }
     }
@@ -452,6 +462,20 @@ export class BoardCanvas extends EventEmitter<BoardCanvas> {
         }
     }
 
+    getCursorTextStyle() {
+        const position = this.data[this.cursorPositionIndex];
+        const { color, fontfamily, size, bold, italic, background } = position;
+        return {
+            ...this.defaultFontStyle,
+            color,
+            fontfamily,
+            size,
+            bold,
+            italic,
+            background,
+        };
+    }
+
     clearSelectedRange() {
         if (this.selectedRange.length > 0) {
             this.selectedRange = [];
@@ -589,6 +613,7 @@ export class BoardCanvas extends EventEmitter<BoardCanvas> {
         if (this.listeners.mousedown) {
             this.listeners.mousedown(positionIndex);
         }
+        this.notify("placeCursor", this);
     }
 
     onMousemove(e: MouseEvent) {
@@ -934,6 +959,7 @@ export class BoardCanvas extends EventEmitter<BoardCanvas> {
             this.cursorPositionIndex,
             position.pageIndex
         );
+        this.notify("moveCursor", this);
     }
 
     // Calculate the position belong to which page

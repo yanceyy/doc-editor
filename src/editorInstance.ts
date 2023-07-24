@@ -18,7 +18,7 @@ const initialData = text.split("").map((item, index) => {
         return {
             type: "text",
             value: item,
-            background: "#409EFF",
+            background: "#3b82f6",
         };
     } else if (index >= 60 && index <= 90) {
         return {
@@ -33,7 +33,7 @@ const initialData = text.split("").map((item, index) => {
             value: item,
             italic: true,
             lineheight: 3,
-            background: "#E6A23C",
+            background: "#f59e0b",
         };
     } else if (index >= 500 && index <= 530) {
         return {
@@ -60,7 +60,7 @@ const initialData = text.split("").map((item, index) => {
         return {
             type: "text",
             value: item,
-            color: "#ec4899",
+            color: "#ef4444",
             size: 24,
         };
     } else if (index >= 1600 && index <= 1888) {
@@ -69,7 +69,7 @@ const initialData = text.split("").map((item, index) => {
             value: item,
             size: 18,
             fontfamily: "Monospace",
-            background: "#10b981",
+            background: "#f59e0b",
         };
     } else {
         return {

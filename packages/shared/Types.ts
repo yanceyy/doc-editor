@@ -23,7 +23,9 @@ export type EventType =
     | "rangeChange"
     | "render"
     | "pointerdown"
-    | "paste";
+    | "paste"
+    | "moveCursor"
+    | "placeCursor";
 
 export type ElementType = "text" | "image" | "list";
 
@@ -62,3 +64,8 @@ export type ElementAttribute =
     | Exclude<keyof Element, "value">
     | "increaseFontSize"
     | "decreaseFontSize";
+
+export interface Color {
+    name: string;
+    value: string;
+}

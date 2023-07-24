@@ -18,7 +18,9 @@ import {
     TextIncrease,
     Undo,
 } from "@mui/icons-material";
+import { useEffect, useRef } from "react";
 
+import { ColorPickerHandle } from "ui-components/ColorPicker";
 import { editor } from "../../editorInstance";
 
 const fontFamilyList = [
@@ -54,20 +56,41 @@ const fontFamilyList = [
 
 const colors = [
     { name: "black", value: "black" },
-    { name: "gray.500", value: "#6b7280" },
-    { name: "red.500", value: "#ef4444" },
-    { name: "gray.700", value: "#374151" },
-    { name: "green.500", value: "#10b981" },
-    { name: "blue.500", value: "#3b82f6" },
-    { name: "blue.800", value: "#1e40af" },
-    { name: "yellow.500", value: "#f59e0b" },
-    { name: "orange.500", value: "#f97316" },
-    { name: "purple.500", value: "#8b5cf6" },
-    { name: "pink.500", value: "#ec4899" },
+    { name: "#6b7280", value: "#6b7280" },
+    { name: "#ef4444", value: "#ef4444" },
+    { name: "#374151", value: "#374151" },
+    { name: "#10b981", value: "#10b981" },
+    { name: "#3b82f6", value: "#3b82f6" },
+    { name: "#1e40af", value: "#1e40af" },
+    { name: "#f59e0b", value: "#f59e0b" },
+    { name: "#f97316", value: "#f97316" },
+    { name: "#8b5cf6", value: "#8b5cf6" },
     { name: "transparent", value: "transparent" },
 ];
 
 export function Toolbar() {
+    const textColorPickerRef = useRef<ColorPickerHandle>(null);
+    const backgroundColorPickerRef = useRef<ColorPickerHandle>(null);
+
+    useEffect(() => {
+        editor.observe(["moveCursor", "pointerdown"], (ed) => {
+            const { color, background } = ed.getCursorTextStyle();
+
+            const curFontColor = colors.find((c) => c.value === color);
+            if (curFontColor) {
+                textColorPickerRef.current?.setColor(curFontColor);
+            }
+
+            const curBackgroundColor = colors.find(
+                (c) => c.value === background
+            );
+            console.log({ curBackgroundColor, background });
+            if (curBackgroundColor) {
+                backgroundColorPickerRef.current?.setColor(curBackgroundColor);
+            }
+        });
+    }, []);
+
     return (
         <Flex justifyContent="center" gap="2">
             <Box p={4}>
@@ -148,6 +171,7 @@ export function Toolbar() {
                         onChange={(color) => {
                             editor.updateSelectedText("color", color.value);
                         }}
+                        ref={textColorPickerRef}
                     />
                     <ColorPicker
                         colors={colors}
@@ -163,6 +187,7 @@ export function Toolbar() {
                                 color.value
                             );
                         }}
+                        ref={backgroundColorPickerRef}
                     />
                 </Stack>
             </Box>
