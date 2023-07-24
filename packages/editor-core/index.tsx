@@ -936,6 +936,7 @@ export class BoardCanvas extends EventEmitter<BoardCanvas> {
     updateSelectedText(attrName: ElementAttribute, attrValue?: any) {
         if (this.cursorPositionIndex < 0) {
             const range = this.getSelectedRange();
+            const { fontSize } = this.options;
             if (range.length > 0) {
                 for (let i = range[0]; i <= range[1]; i++) {
                     const item = this.data[i];
@@ -944,7 +945,7 @@ export class BoardCanvas extends EventEmitter<BoardCanvas> {
                             if (item.size) {
                                 item.size += 1;
                             } else {
-                                item.size = this.options.fontSize + 1;
+                                item.size = fontSize + 1;
                             }
                             break;
                         }
@@ -952,7 +953,7 @@ export class BoardCanvas extends EventEmitter<BoardCanvas> {
                             if (item.size) {
                                 item.size -= 1;
                             } else {
-                                item.size = this.options.fontSize - 1;
+                                item.size = fontSize - 1;
                             }
                             break;
                         }
@@ -1018,16 +1019,19 @@ export class BoardCanvas extends EventEmitter<BoardCanvas> {
 
     windowToCanvas(e: MouseEvent, canvas: HTMLCanvasElement) {
         const { left, top } = canvas.getBoundingClientRect();
+        const { zoom } = this.options;
         return {
-            x: (e.clientX - left) / this.options.zoom,
-            y: (e.clientY - top) / this.options.zoom,
+            x: (e.clientX - left) / zoom,
+            y: (e.clientY - top) / zoom,
         };
     }
 
     canvasToContainer(x: number, y: number, canvas: HTMLCanvasElement) {
+        const { zoom } = this.options;
+
         return {
-            x: x * this.options.zoom + canvas.offsetLeft,
-            y: y * this.options.zoom + canvas.offsetTop,
+            x: x * zoom + canvas.offsetLeft,
+            y: y * zoom + canvas.offsetTop,
         };
     }
 
