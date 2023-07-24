@@ -298,6 +298,15 @@ export class BoardCanvas extends EventEmitter<BoardCanvas> {
 
             renderHeight += row.height;
         });
+
+        // Remove the pages that are not rendered to avoid the blank page
+        if (pageIndex < this.pageCanvasCtxList.length - 1) {
+            this.pageCanvasCtxList.splice(pageIndex + 1);
+            for (let i = pageIndex + 1; i < this.pageCanvasList.length; i++) {
+                this.pageCanvasList[i].remove();
+            }
+            this.pageCanvasList.splice(pageIndex + 1);
+        }
     }
 
     async getImgBlobs() {
