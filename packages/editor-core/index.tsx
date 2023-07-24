@@ -112,6 +112,19 @@ export class BoardCanvas extends EventEmitter<BoardCanvas> {
         this.attachHistoryObserver();
     }
 
+    setZoom(ratio: number) {
+        const { dpr, zoom } = this.options;
+        this.options.zoom = ratio;
+        this.pageCanvasList.forEach((canvas) => {
+            this.setCanvasProperty(canvas);
+        });
+        this.pageCanvasCtxList.forEach((ctx) => {
+            ctx.scale(dpr * zoom, dpr * zoom);
+        });
+
+        this.render();
+    }
+
     attachHistoryObserver() {
         this.history.add(deepClone(this.data));
 
@@ -590,13 +603,10 @@ export class BoardCanvas extends EventEmitter<BoardCanvas> {
 
     // Create new page
     createPage(pageIndex: number) {
-        const { pageWidth, pageHeight, pageMargin, dpr, zoom } = this.options;
+        const { pageMargin, dpr, zoom } = this.options;
         const canvas = document.createElement("canvas");
         canvas.id = `page-${pageIndex}`;
-        canvas.width = pageWidth * dpr * zoom;
-        canvas.height = pageHeight * dpr * zoom;
-        canvas.style.width = pageWidth * zoom + "px";
-        canvas.style.height = pageHeight * zoom + "px";
+        this.setCanvasProperty(canvas);
         canvas.style.cursor = "text";
         canvas.style.backgroundColor = "#fff";
         canvas.style.boxShadow = "#9ea1a566 0 2px 12px";
@@ -611,10 +621,19 @@ export class BoardCanvas extends EventEmitter<BoardCanvas> {
         this.pageCanvasCtxList.push(ctx);
     }
 
+    setCanvasProperty(canvas: HTMLCanvasElement) {
+        const { pageWidth, pageHeight, dpr, zoom } = this.options;
+        canvas.width = pageWidth * dpr * zoom;
+        canvas.height = pageHeight * dpr * zoom;
+        canvas.style.width = pageWidth * zoom + "px";
+        canvas.style.height = pageHeight * zoom + "px";
+    }
+
     onMousedown(e: MouseEvent, pageIndex: number) {
         this.isMousedown = true;
 
         const { x, y } = this.windowToCanvas(e, this.pageCanvasList[pageIndex]);
+
         const positionIndex = this.getPositionByPos(x, y, pageIndex);
         this.cursorPositionIndex = positionIndex;
         this.computeAndRenderCursor(positionIndex, pageIndex);
@@ -774,6 +793,7 @@ export class BoardCanvas extends EventEmitter<BoardCanvas> {
     }
 
     setCursor(left: number, top: number, height: number) {
+        const { zoom } = this.options;
         this.clearSelectedRange();
         this.cursorTimer && clearTimeout(this.cursorTimer);
         if (!this.cursorEl) {
@@ -783,9 +803,10 @@ export class BoardCanvas extends EventEmitter<BoardCanvas> {
             this.cursorEl.style.backgroundColor = "#000";
             this.container.appendChild(this.cursorEl);
         }
+
         this.cursorEl.style.left = left + "px";
         this.cursorEl.style.top = top + "px";
-        this.cursorEl.style.height = height + "px";
+        this.cursorEl.style.height = height * zoom + "px";
         this.cursorEl.style.opacity = "1";
         setTimeout(() => {
             this.focus();
@@ -997,15 +1018,15 @@ export class BoardCanvas extends EventEmitter<BoardCanvas> {
     windowToCanvas(e: MouseEvent, canvas: HTMLCanvasElement) {
         const { left, top } = canvas.getBoundingClientRect();
         return {
-            x: e.clientX - left,
-            y: e.clientY - top,
+            x: (e.clientX - left) / this.options.zoom,
+            y: (e.clientY - top) / this.options.zoom,
         };
     }
 
     canvasToContainer(x: number, y: number, canvas: HTMLCanvasElement) {
         return {
-            x: x + canvas.offsetLeft,
-            y: y + canvas.offsetTop,
+            x: x * this.options.zoom + canvas.offsetLeft,
+            y: y * this.options.zoom + canvas.offsetTop,
         };
     }
 

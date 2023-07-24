@@ -1,14 +1,16 @@
 import { FileFooter, ZoomSlider } from "ui-components";
 
+import { editor } from "../../editorInstance";
+
 export function Footer() {
     return (
         <FileFooter
             leftMenu={null}
             rightMenu={
                 <ZoomSlider
-                    onChange={() => {
+                    onChange={(value) => {
                         //TODO: Need to fix this
-                        //editor.zoom(value / 100);
+                        editor.setZoom(value / 100);
                     }}
                 />
             }
