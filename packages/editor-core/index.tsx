@@ -12,7 +12,7 @@ import { EventEmitter } from "shared/bases";
 export class BoardCanvas extends EventEmitter<BoardCanvas> {
     defaultFontStyle = {
         fontSize: 12, // Font size
-        fontFamily: "Arial", // Font family
+        fontFamily: "Courier", // Font family
         color: "#000000", // Text color
         bold: false, // Bold
         italic: false, // Italic
@@ -529,7 +529,7 @@ export class BoardCanvas extends EventEmitter<BoardCanvas> {
             let { lineHeight: actLineHeight } = item;
             actLineHeight = actLineHeight || lineHeight;
 
-            // get the pained style of the text like "italic bold 12px Arial"
+            // get the pained style of the text like "italic bold 12px"
             const font = this.getFontStr(item);
 
             const info = {

@@ -27,32 +27,20 @@ import { pdfExport } from "extensions/pdfExport";
 
 const fontFamilyList = [
     {
-        label: "Arial",
-        value: "Arial",
+        label: "Courier",
+        value: "Courier",
     },
     {
-        label: "Segoe UI",
-        value: "Segoe UI",
+        label: "Helvetica",
+        value: "Helvetica",
     },
     {
-        label: "Ink Free",
-        value: "Ink Free",
+        label: "Times",
+        value: "Times",
     },
     {
-        label: "Fantasy",
-        value: "Fantasy",
-    },
-    {
-        label: "Cursive",
-        value: "Cursive",
-    },
-    {
-        label: "Monospace",
-        value: "Monospace",
-    },
-    {
-        label: "Roboto",
-        value: "Roboto",
+        label: "ZapfDingbats",
+        value: "ZapfDingbats",
     },
 ];
 

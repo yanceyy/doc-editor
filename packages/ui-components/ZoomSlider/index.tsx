@@ -28,7 +28,7 @@ export function ZoomSlider({ onChange }: ZoomSliderProps) {
         [onChange, setValue]
     );
     return (
-        <HStack spacing="6px">
+        <HStack spacing="6px" marginX="12px">
             <Button
                 colorScheme="teal"
                 variant="ghost"
@@ -59,13 +59,12 @@ export function ZoomSlider({ onChange }: ZoomSliderProps) {
             >
                 +
             </Button>
-            <Menu>
+            <Menu matchWidth={true}>
                 <MenuButton size="sm" as={Button}>{`${value}%`}</MenuButton>
-                <MenuList textAlign="center">
+                <MenuList>
                     {[50, 75, 100, 150, 200].map((value) => (
                         <MenuItem
                             key={value}
-                            textAlign="center"
                             onClick={() => combineAction(value)}
                         >
                             {value}%

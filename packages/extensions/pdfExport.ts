@@ -8,6 +8,7 @@ export function pdfExport(editor: BoardCanvas) {
         unit: "px", // measurement unit: pt, mm, cm, in
         format: [pageWidth, pageHeight], // format: a4, a3, a2, etc.
     });
+    console.log(doc.getFontList());
 
     const { rows } = editor;
     const offsetX = pagePadding[3];
@@ -21,7 +22,11 @@ export function pdfExport(editor: BoardCanvas) {
         renderHeight += index === 0 ? 0 : rows[index - 1].height;
 
         elementList.forEach((element) => {
-            doc.setFont(element.fontfamily ?? "Arial");
+            doc.setFont(
+                element.fontfamily ?? "Courier",
+                element.italic ? "italic" : "normal",
+                element.bold ? "bold" : "normal"
+            );
             doc.setFontSize(element.size ?? 16);
             doc.setTextColor(element.color ?? "#000000");
             if (element.background && element.background !== "transparent") {
@@ -32,6 +37,26 @@ export function pdfExport(editor: BoardCanvas) {
                     element.info.width + 1, // add 1px to avoid the gap between two adjacent elements
                     row.height,
                     "F"
+                );
+            }
+
+            if (element.underline) {
+                doc.setLineWidth(1);
+                doc.line(
+                    renderWidth,
+                    renderHeight + row.height,
+                    renderWidth + element.info.width,
+                    renderHeight + row.height
+                );
+            }
+
+            if (element.lineThrough) {
+                doc.setLineWidth(1);
+                doc.line(
+                    renderWidth,
+                    renderHeight + row.height / 2,
+                    renderWidth + element.info.width,
+                    renderHeight + row.height / 2
                 );
             }
 
