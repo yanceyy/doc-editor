@@ -42,6 +42,14 @@ const fontFamilyList = [
         label: "ZapfDingbats",
         value: "ZapfDingbats",
     },
+    {
+        label: "Lumanosimo",
+        value: "Lumanosimo",
+    },
+    {
+        label: "EduSABeginner",
+        value: "EduSABeginner",
+    },
 ];
 
 const colors = [

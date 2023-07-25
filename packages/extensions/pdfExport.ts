@@ -1,3 +1,6 @@
+import "./fonts/Lumanosimo-Regular-normal";
+import "./fonts/EduSABeginner-normal";
+
 import { BoardCanvas } from "editor-core";
 import { jsPDF } from "jspdf";
 
@@ -8,7 +11,6 @@ export function pdfExport(editor: BoardCanvas) {
         unit: "px", // measurement unit: pt, mm, cm, in
         format: [pageWidth, pageHeight], // format: a4, a3, a2, etc.
     });
-    console.log(doc.getFontList());
 
     const { rows } = editor;
     const offsetX = pagePadding[3];

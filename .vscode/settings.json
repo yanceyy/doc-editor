@@ -3,6 +3,7 @@
         "Chakra",
         "compositionend",
         "compositionstart",
-        "fontfamily"
+        "fontfamily",
+        "Lumanosimo"
     ]
 }

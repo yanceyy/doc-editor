@@ -46,11 +46,13 @@ export function Editor() {
 
     useEffect(() => {
         const canvas = canvasRef.current;
+
         if (canvas) {
             editor.setContainer(canvas);
             editor.createPage(0);
             editor.render(false);
         }
+
         return () => {
             editor?.removeAll();
         };
