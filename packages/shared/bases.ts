@@ -3,7 +3,6 @@ import type { EventType } from "shared/Types";
 export class EventEmitter<T> {
     observers: Partial<Record<EventType, ((context: T) => void)[]>> = {};
 
-    // TODO: Allow pass eventList string like 'hover|click'
     observe(
         eventTypes: EventType[] | EventType,
         callback: (context: T) => void
@@ -15,6 +14,7 @@ export class EventEmitter<T> {
             }
             this.observers[type]?.push(callback);
         });
+        return () => this.unObserve(eventTypes, callback);
     }
 
     unObserve(

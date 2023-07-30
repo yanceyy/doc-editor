@@ -5,9 +5,9 @@ import { BoardCanvas } from "editor-core";
 import { jsPDF } from "jspdf";
 
 export function pdfExport(editor: BoardCanvas) {
-    const { pagePadding, pageHeight, pageWidth } = editor.options;
+    const { pagePadding, pageHeight, pageWidth, orientation } = editor.options;
     const doc = new jsPDF({
-        orientation: "portrait", // portrait or landscape
+        orientation, // portrait or landscape
         unit: "px", // measurement unit: pt, mm, cm, in
         format: [pageWidth, pageHeight], // format: a4, a3, a2, etc.
     });

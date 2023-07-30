@@ -71,6 +71,7 @@ export class BoardCanvas extends EventEmitter<BoardCanvas> {
             {
                 pageWidth: 816, // Paper width
                 pageHeight: 1056, // Paper height
+                orientation: "portrait" as const, // Paper orientation
 
                 lineHeight: 1.5, // Line height, as a multiple
 
@@ -1026,12 +1027,14 @@ export class BoardCanvas extends EventEmitter<BoardCanvas> {
         };
     }
 
+    // Convert the cursor position to the position relative to the canvases' container,
+    // it will ensure when we scroll the document, the cursor will still be the same position related to doc
     canvasToContainer(x: number, y: number, canvas: HTMLCanvasElement) {
         const { zoom } = this.options;
-
+        const { offsetLeft, offsetTop } = canvas;
         return {
-            x: x * zoom + canvas.offsetLeft,
-            y: y * zoom + canvas.offsetTop,
+            x: x * zoom + offsetLeft,
+            y: y * zoom + offsetTop,
         };
     }
 

@@ -1,6 +1,7 @@
 export interface DocEditorConfigOptions {
     pageWidth: number; // Paper width
     pageHeight: number; // Paper height
+    orientation: "portrait" | "landscape"; // Paper orientation
     pagePadding: number[]; // Paper padding, respectively: top, right, bottom, left
     pageMargin: number; // Margin between pages
     pagePaddingIndicatorSize: number; // Size of the paper padding indicator, which is the side length of the four right angles
