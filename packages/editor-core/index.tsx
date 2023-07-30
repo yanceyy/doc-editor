@@ -54,6 +54,8 @@ export class BoardCanvas extends EventEmitter<BoardCanvas> {
     isMousedown: boolean;
     isCompositing: boolean;
     mousemoveTimer: number | null;
+    waitingForRender = false;
+    notComputeRows = false;
     listeners: {
         mousedown: null | ((positionIndex: number) => void);
         rangeChange: null | ((range: number[]) => void);
@@ -275,14 +277,23 @@ export class BoardCanvas extends EventEmitter<BoardCanvas> {
     }
 
     render(notComputeRows = false) {
-        this.clear();
-        this.positionList = [];
-        if (!notComputeRows) {
-            this.rows = [];
-            this.computeRows();
+        // If multiple renderings are triggered, we batch these rendering in the next frame
+        this.notComputeRows ||= notComputeRows;
+        if (!this.waitingForRender) {
+            this.waitingForRender = true;
+            requestAnimationFrame(() => {
+                this.clear();
+                this.positionList = [];
+                if (!notComputeRows) {
+                    this.rows = [];
+                    this.computeRows();
+                }
+                this.renderPage();
+                this.notify("render", this);
+                this.notComputeRows = false;
+                this.waitingForRender = false;
+            });
         }
-        this.renderPage();
-        this.notify("render", this);
     }
 
     // Delete all the canvas element from dom
