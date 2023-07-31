@@ -224,10 +224,14 @@ export class BoardCanvas extends EventEmitter<BoardCanvas> {
             );
             this.render();
             this.cursorPositionIndex += text.length;
-            this.computeAndRenderCursor(
-                this.cursorPositionIndex,
-                this.positionList[this.cursorPositionIndex].pageIndex
-            );
+            // put it into the next frame to avoid the cursor position is updated before the rendering
+            requestAnimationFrame(() => {
+                this.computeAndRenderCursor(
+                    this.cursorPositionIndex,
+                    this.positionList[this.cursorPositionIndex].pageIndex
+                );
+            });
+
             this.notify("paste", this);
         });
     }
@@ -904,10 +908,15 @@ export class BoardCanvas extends EventEmitter<BoardCanvas> {
             );
             this.render();
             this.cursorPositionIndex += length;
-            this.computeAndRenderCursor(
-                this.cursorPositionIndex,
-                this.positionList[this.cursorPositionIndex].pageIndex
-            );
+
+            // put it into the next frame to avoid the cursor position is updated before the rendering
+            requestAnimationFrame(() => {
+                this.computeAndRenderCursor(
+                    this.cursorPositionIndex,
+                    this.positionList[this.cursorPositionIndex].pageIndex
+                );
+            });
+
             this.notify("input", this);
         }, 0);
     }
