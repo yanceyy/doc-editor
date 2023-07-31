@@ -55,7 +55,7 @@ export class BoardCanvas extends EventEmitter<BoardCanvas> {
     isCompositing: boolean;
     mousemoveTimer: number | null;
     waitingForRender = false;
-    notComputeRows = false;
+    notComputeRows = true;
     listeners: {
         mousedown: null | ((positionIndex: number) => void);
         rangeChange: null | ((range: number[]) => void);
@@ -126,7 +126,7 @@ export class BoardCanvas extends EventEmitter<BoardCanvas> {
             ctx.scale(dpr * ratio, dpr * ratio);
         });
 
-        this.render();
+        this.render(true);
     }
 
     attachHistoryObserver() {
@@ -190,7 +190,7 @@ export class BoardCanvas extends EventEmitter<BoardCanvas> {
             if ((isCommandPressed || isControlPressed) && isAPressed) {
                 this.selectedRange = [-1, this.data.length - 1];
                 this.cursorPositionIndex = -1;
-                this.render();
+                this.batchRender();
                 return;
             }
 
@@ -232,7 +232,7 @@ export class BoardCanvas extends EventEmitter<BoardCanvas> {
                     };
                 })
             );
-            this.render();
+            this.batchRender();
             this.cursorPositionIndex += text.length;
             // put it into the next frame to avoid the cursor position is updated before the rendering
             requestAnimationFrame(() => {
@@ -285,12 +285,12 @@ export class BoardCanvas extends EventEmitter<BoardCanvas> {
 
     undo() {
         this.data = this.history.undo();
-        this.render();
+        this.batchRender();
     }
 
     redo() {
         this.data = this.history.redo();
-        this.render();
+        this.batchRender();
     }
 
     //TODO: dbClick will select the whole word
@@ -303,20 +303,25 @@ export class BoardCanvas extends EventEmitter<BoardCanvas> {
     }
 
     render(notComputeRows = false) {
+        this.clear();
+        this.positionList = [];
+        if (!notComputeRows) {
+            this.rows = [];
+            this.computeRows();
+        }
+        this.renderPage();
+        this.notify("render", this);
+    }
+
+    batchRender(notComputeRows = false) {
         // If multiple renderings are triggered, we batch these rendering in the next frame
-        this.notComputeRows ||= notComputeRows;
+        this.notComputeRows &&= notComputeRows;
         if (!this.waitingForRender) {
             this.waitingForRender = true;
             requestAnimationFrame(() => {
-                this.clear();
-                this.positionList = [];
-                if (!notComputeRows) {
-                    this.rows = [];
-                    this.computeRows();
-                }
-                this.renderPage();
-                this.notify("render", this);
-                this.notComputeRows = false;
+                this.render(this.notComputeRows);
+
+                this.notComputeRows = true;
                 this.waitingForRender = false;
             });
         }
@@ -540,7 +545,7 @@ export class BoardCanvas extends EventEmitter<BoardCanvas> {
     clearSelectedRange() {
         if (this.selectedRange.length > 0) {
             this.selectedRange = [];
-            this.render();
+            this.batchRender();
         }
     }
 
@@ -721,7 +726,7 @@ export class BoardCanvas extends EventEmitter<BoardCanvas> {
                     this.cursorPositionIndex = -1;
                     this.hideCursor();
                 }
-                this.render(true);
+                this.batchRender(true);
             }
         }, 100);
     }
@@ -932,7 +937,7 @@ export class BoardCanvas extends EventEmitter<BoardCanvas> {
                     };
                 })
             );
-            this.render();
+            this.batchRender();
             this.cursorPositionIndex += length;
 
             // put it into the next frame to avoid the cursor position is updated before the rendering
@@ -968,14 +973,16 @@ export class BoardCanvas extends EventEmitter<BoardCanvas> {
             }
         } else {
             this.data.splice(this.cursorPositionIndex, 1);
-            this.render();
+            this.batchRender();
             this.cursorPositionIndex--;
         }
         const position = this.positionList[this.cursorPositionIndex];
+
         this.computeAndRenderCursor(
             this.cursorPositionIndex,
             position ? position.pageIndex : 0
         );
+
         this.notify("delete", this);
     }
 
@@ -1023,7 +1030,7 @@ export class BoardCanvas extends EventEmitter<BoardCanvas> {
                 return;
             }
         }
-        this.render();
+        this.batchRender();
         this.notify("update", this);
     }
 
@@ -1032,7 +1039,7 @@ export class BoardCanvas extends EventEmitter<BoardCanvas> {
             value: "\n",
             type: "text" as ElementType,
         });
-        this.render();
+        this.batchRender();
         this.cursorPositionIndex++;
         const position = this.positionList[this.cursorPositionIndex];
         this.computeAndRenderCursor(

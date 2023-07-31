@@ -50,7 +50,7 @@ export function Editor() {
         if (canvas) {
             editor.setContainer(canvas);
             editor.createPage(0);
-            editor.render(false);
+            editor.batchRender(false);
         }
 
         return () => {
