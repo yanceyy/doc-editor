@@ -1,11 +1,13 @@
 import type { EventType } from "shared/Types";
 
 export class EventEmitter<T> {
-    observers: Partial<Record<EventType, ((context: T) => void)[]>> = {};
+    observers: Partial<
+        Record<EventType, ((context: T, ...args: unknown[]) => void)[]>
+    > = {};
 
     observe(
         eventTypes: EventType[] | EventType,
-        callback: (context: T) => void
+        callback: (context: T, ...args: unknown[]) => void
     ) {
         if (!Array.isArray(eventTypes)) eventTypes = [eventTypes];
         eventTypes.forEach((type) => {
@@ -19,7 +21,7 @@ export class EventEmitter<T> {
 
     unObserve(
         eventTypes: EventType[] | EventType,
-        callback: (context: T) => void
+        callback: (context: T, ...args: unknown[]) => void
     ) {
         if (!Array.isArray(eventTypes)) eventTypes = [eventTypes];
         eventTypes.forEach((type) => {
@@ -31,9 +33,9 @@ export class EventEmitter<T> {
         });
     }
 
-    notify(type: EventType, data: T) {
+    notify(type: EventType, data: T, ...args: unknown[]) {
         this.observers[type]?.forEach((item) => {
-            item.call(this, data);
+            item.call(this, data, ...args);
         });
     }
 }

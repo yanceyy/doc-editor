@@ -26,7 +26,8 @@ export type EventType =
     | "pointerdown"
     | "paste"
     | "moveCursor"
-    | "placeCursor";
+    | "placeCursor"
+    | "contextmenu";
 
 export type ElementType = "text" | "image" | "list";
 

@@ -139,6 +139,27 @@ export class BoardCanvas extends EventEmitter<BoardCanvas> {
         this.observe(["update", "input", "paste", "delete"], pushHistoryEvent);
     }
 
+    copySelection(event?: ClipboardEvent) {
+        if (this.selectedRange.length === 0) {
+            return;
+        }
+
+        const range = this.getSelectedRange();
+        const text = this.data
+            .slice(range[0], range[1] + 1)
+            .map((item) => item.value)
+            .join("");
+
+        // when we dispatch the copy event from a button click event,
+        // the event is restricted by the browser, so we use the clipboard api to copy the text
+        if (event) {
+            event.preventDefault();
+            event.clipboardData?.setData("text/plain", text);
+            return;
+        }
+        void navigator.clipboard.writeText(text);
+    }
+
     attachEvents() {
         document.body.addEventListener(
             "mousemove",
@@ -186,18 +207,7 @@ export class BoardCanvas extends EventEmitter<BoardCanvas> {
             }
         });
 
-        document.body.addEventListener("copy", (event) => {
-            if (this.selectedRange.length === 0) {
-                return;
-            }
-            event.preventDefault();
-            const range = this.getSelectedRange();
-            const text = this.data
-                .slice(range[0], range[1] + 1)
-                .map((item) => item.value)
-                .join("");
-            event.clipboardData?.setData("text/plain", text);
-        });
+        document.body.addEventListener("copy", this.copySelection.bind(this));
 
         document.body.addEventListener("paste", (event) => {
             event.preventDefault();
@@ -233,6 +243,18 @@ export class BoardCanvas extends EventEmitter<BoardCanvas> {
             });
 
             this.notify("paste", this);
+        });
+
+        document.body.addEventListener("contextmenu", (event) => {
+            if (event.target instanceof HTMLElement) {
+                if (event.target?.tagName !== "CANVAS") {
+                    return;
+                }
+            } else {
+                return;
+            }
+            event.preventDefault();
+            this.notify("contextmenu", this, event);
         });
     }
 
@@ -629,6 +651,10 @@ export class BoardCanvas extends EventEmitter<BoardCanvas> {
         canvas.style.boxShadow = "#9ea1a566 0 2px 12px";
         canvas.style.marginBottom = pageMargin + "px";
         canvas.addEventListener("mousedown", (e) => {
+            // only left click
+            if (e.button !== 0) {
+                return;
+            }
             this.onMousedown(e, pageIndex);
         });
         this.container.appendChild(canvas);
