@@ -9,7 +9,7 @@ module.exports = {
         "plugin:@typescript-eslint/recommended-requiring-type-checking",
         "plugin:react-hooks/recommended",
     ],
-    ignorePatterns: [".eslintrc.cjs"],
+    ignorePatterns: [".eslintrc.cjs", "playwright.config.ts"],
     parser: "@typescript-eslint/parser",
     parserOptions: {
         ecmaVersion: "latest",
