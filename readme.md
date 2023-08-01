@@ -1,6 +1,20 @@
 # Doc editor
 
-Doc editor is an online document editor based on canvas
+Doc Editor is a web-based document editing application, utilizing canvas for dynamic interactions. The project has a monorepo structure, with the core package serving as a UI-framework-independent module.
+
+## Features
+
+### Finished
+
+- Change font family, font-size, underline, italic, bold, highlight, line through
+- Download as PDf format
+- Redo and undo operations
+- Zoom in and out
+- Page Negators bar
+
+### In Development
+
+- Support insert image
 
 ## Run on local
 
