@@ -21,7 +21,9 @@ export function ContextMenu({
             <MenuList top={top} left={left} position="absolute">
                 {items.map((item) => {
                     return (
-                        <MenuItem onClick={item.onClick}>{item.label}</MenuItem>
+                        <MenuItem key={item.label} onClick={item.onClick}>
+                            {item.label}
+                        </MenuItem>
                     );
                 })}
             </MenuList>

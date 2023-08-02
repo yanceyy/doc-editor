@@ -43,8 +43,16 @@ export class BoardCanvas extends EventEmitter<BoardCanvas> {
             width: number;
             height: number;
         };
-        size?: number;
         value?: string;
+        size?: number;
+        fontfamily?: string; // Font family
+        font?: string; // Combined font family and size
+        bold?: boolean; // Bold text
+        italic?: boolean; // Italic text
+        underline?: boolean; // Underlined text
+        lineThrough?: boolean; // Strikethrough text
+        background?: string; // Background color
+        color?: string; // Text color
     }[];
     mousemoveEvent: MouseEvent | null;
     cursorTimer: number | null;
@@ -167,9 +175,7 @@ export class BoardCanvas extends EventEmitter<BoardCanvas> {
         );
 
         document.body.addEventListener("mouseup", this.onMouseup.bind(this));
-        document.body.addEventListener("dblclick", () => {
-            this.onDbClick.bind(this);
-        });
+
         document.body.addEventListener("keydown", (e: KeyboardEvent) => {
             // For MacOS
             const isCommandPressed = e.metaKey;
@@ -293,9 +299,32 @@ export class BoardCanvas extends EventEmitter<BoardCanvas> {
         this.batchRender();
     }
 
-    //TODO: dbClick will select the whole word
+    getCurrentInlineStyle() {
+        return this.positionList[this.cursorPositionIndex];
+    }
+
     onDbClick() {
-        return;
+        // Select the word when double click
+        let start = this.cursorPositionIndex;
+        let end = this.cursorPositionIndex;
+        while (
+            this.data[start] !== undefined &&
+            this.data[start].value !== " "
+        ) {
+            start--;
+        }
+        while (
+            this.data[end] !== undefined &&
+            this.data[end].value !== " " &&
+            this.data[end].value !== "\n"
+        ) {
+            end++;
+        }
+        this.selectedRange = [start, end - 1];
+
+        this.cursorPositionIndex = -1;
+        this.hideCursor();
+        this.batchRender();
     }
 
     setContainer(container: HTMLElement) {
@@ -662,6 +691,10 @@ export class BoardCanvas extends EventEmitter<BoardCanvas> {
             }
             this.onMousedown(e, pageIndex);
         });
+
+        // Double click to select the all the word
+        canvas.addEventListener("dblclick", this.onDbClick.bind(this));
+
         this.container.appendChild(canvas);
         const ctx = canvas.getContext("2d")!;
         ctx.scale(dpr * zoom, dpr * zoom);
@@ -925,7 +958,8 @@ export class BoardCanvas extends EventEmitter<BoardCanvas> {
             if (range.length > 0) {
                 this.delete();
             }
-            const cur = this.positionList[this.cursorPositionIndex];
+            const cur = this.getCurrentInlineStyle();
+            console.log("cur", cur);
             this.data.splice(
                 this.cursorPositionIndex + 1,
                 0,

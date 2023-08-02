@@ -15,10 +15,10 @@ export function Carousel({ thumbnails, ...others }: CarouselProps) {
     return (
         <Stack {...others}>
             {thumbnails.length === 0
-                ? Array(3)
+                ? Array<number>(3)
                       .fill(0)
-                      .map(() => (
-                          <VStack width="100%">
+                      .map((_, i) => (
+                          <VStack width="100%" key={"thumb_" + i}>
                               <Skeleton width="70%" aspectRatio={0.7} />
                           </VStack>
                       ))

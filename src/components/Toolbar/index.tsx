@@ -84,7 +84,6 @@ export function Toolbar() {
             const curBackgroundColor = colors.find(
                 (c) => c.value === background
             );
-            console.log({ curBackgroundColor, background });
             if (curBackgroundColor) {
                 backgroundColorPickerRef.current?.setColor(curBackgroundColor);
             }
