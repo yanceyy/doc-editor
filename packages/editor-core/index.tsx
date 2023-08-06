@@ -168,6 +168,42 @@ export class BoardCanvas extends EventEmitter<BoardCanvas> {
         void navigator.clipboard.writeText(text);
     }
 
+    paste(event: ClipboardEvent) {
+        event.preventDefault();
+        const text = event.clipboardData?.getData("text/plain");
+        if (!text) {
+            return;
+        }
+        const range = this.getSelectedRange();
+        if (range.length > 0) {
+            this.delete();
+        }
+        const cur = this.positionList[this.cursorPositionIndex];
+        //Todo: support paste rich text like bold, italic, underline, images
+        this.data.splice(
+            this.cursorPositionIndex + 1,
+            0,
+            ...text.split("").map((item) => {
+                return {
+                    ...(cur || {}),
+                    value: item,
+                    type: "text" as ElementType,
+                };
+            })
+        );
+        this.batchRender();
+        this.cursorPositionIndex += text.length;
+        // put it into the next frame to avoid the cursor position is updated before the rendering
+        requestAnimationFrame(() => {
+            this.computeAndRenderCursor(
+                this.cursorPositionIndex,
+                this.positionList[this.cursorPositionIndex].pageIndex
+            );
+        });
+
+        this.notify("paste", this);
+    }
+
     attachEvents() {
         document.body.addEventListener(
             "mousemove",
@@ -215,41 +251,7 @@ export class BoardCanvas extends EventEmitter<BoardCanvas> {
 
         document.body.addEventListener("copy", this.copySelection.bind(this));
 
-        document.body.addEventListener("paste", (event) => {
-            event.preventDefault();
-            const text = event.clipboardData?.getData("text/plain");
-            if (!text) {
-                return;
-            }
-            const range = this.getSelectedRange();
-            if (range.length > 0) {
-                this.delete();
-            }
-            const cur = this.positionList[this.cursorPositionIndex];
-            //Todo: support paste rich text like bold, italic, underline, images
-            this.data.splice(
-                this.cursorPositionIndex + 1,
-                0,
-                ...text.split("").map((item) => {
-                    return {
-                        ...(cur || {}),
-                        value: item,
-                        type: "text" as ElementType,
-                    };
-                })
-            );
-            this.batchRender();
-            this.cursorPositionIndex += text.length;
-            // put it into the next frame to avoid the cursor position is updated before the rendering
-            requestAnimationFrame(() => {
-                this.computeAndRenderCursor(
-                    this.cursorPositionIndex,
-                    this.positionList[this.cursorPositionIndex].pageIndex
-                );
-            });
-
-            this.notify("paste", this);
-        });
+        document.body.addEventListener("paste", this.paste.bind(this));
 
         document.body.addEventListener("contextmenu", (event) => {
             if (event.target instanceof HTMLElement) {

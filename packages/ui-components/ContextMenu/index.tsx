@@ -1,4 +1,4 @@
-import { Menu, MenuList, MenuItem } from "@chakra-ui/react";
+import { Menu, MenuList, MenuItem, Flex, Text } from "@chakra-ui/react";
 
 export interface ContextMenuProps {
     top: number;
@@ -7,6 +7,7 @@ export interface ContextMenuProps {
     items: {
         label: string;
         onClick: () => void;
+        shortcutKeyDesc?: string;
     }[];
 }
 
@@ -22,7 +23,14 @@ export function ContextMenu({
                 {items.map((item) => {
                     return (
                         <MenuItem key={item.label} onClick={item.onClick}>
-                            {item.label}
+                            <Flex justifyContent="space-between" width="100%">
+                                <Text>{item.label}</Text>
+                                {item.shortcutKeyDesc ? (
+                                    <Text fontSize="sm" color="gray.500">
+                                        {item.shortcutKeyDesc}
+                                    </Text>
+                                ) : null}
+                            </Flex>
                         </MenuItem>
                     );
                 })}

@@ -116,3 +116,14 @@ export function canvasToBlob(canvas: HTMLCanvasElement) {
         });
     });
 }
+
+export function isMacPlatform() {
+    return navigator.userAgent.indexOf("Mac") > -1;
+}
+
+export function getCmdByPlatform() {
+    if (isMacPlatform()) {
+        return "cmd";
+    }
+    return "ctrl";
+}

@@ -3,6 +3,7 @@ import { ContextMenu } from "ui-components/ContextMenu";
 import { editor } from "../../editorInstance";
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
+import { getCmdByPlatform } from "shared/utils.ts";
 
 export function TextContextMenu() {
     const [position, setPosition] = useState<{ top: number; left: number }>({
@@ -39,6 +40,7 @@ export function TextContextMenu() {
                     onClick: () => {
                         editor.copySelection();
                     },
+                    shortcutKeyDesc: `${getCmdByPlatform()}+c`,
                 },
                 {
                     label: "Delete",
