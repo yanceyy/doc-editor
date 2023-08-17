@@ -1,8 +1,8 @@
 import { FileFooter, ZoomSlider } from "ui-components";
-
-import { editor } from "../../editorInstance";
+import useEditor from "../../context/useEditor.tsx";
 
 export function Footer() {
+    const editor = useEditor();
     return (
         <FileFooter
             leftMenu={null}

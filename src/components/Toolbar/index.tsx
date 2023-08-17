@@ -22,8 +22,8 @@ import {
 import { useEffect, useRef, useState } from "react";
 
 import { ColorPickerHandle } from "ui-components/ColorPicker";
-import { editor } from "../../editorInstance";
 import { pdfExport } from "extensions/pdfExport";
+import useEditor from "../../context/useEditor.tsx";
 
 const fontFamilyList = [
     {
@@ -71,7 +71,7 @@ export function Toolbar() {
     const backgroundColorPickerRef = useRef<ColorPickerHandle>(null);
     const [isDownloading, setIsDownloading] = useState<boolean>(false);
     const toast = useToast();
-
+    const editor = useEditor();
     useEffect(() => {
         editor.observe(["moveCursor", "pointerdown"], (ed) => {
             const { color, background } = ed.getCursorTextStyle();
@@ -88,7 +88,7 @@ export function Toolbar() {
                 backgroundColorPickerRef.current?.setColor(curBackgroundColor);
             }
         });
-    }, []);
+    }, [editor]);
 
     return (
         <Flex justifyContent="center" gap="2" flexWrap="wrap" p={4}>

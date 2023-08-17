@@ -1,9 +1,8 @@
 import { ContextMenu } from "ui-components/ContextMenu";
-
-import { editor } from "../../editorInstance";
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { getCmdByPlatform } from "shared/utils.ts";
+import useEditor from "../../context/useEditor.tsx";
 
 export function TextContextMenu() {
     const [position, setPosition] = useState<{ top: number; left: number }>({
@@ -11,7 +10,7 @@ export function TextContextMenu() {
         left: 0,
     });
     const [isOpen, setIsOpen] = useState(false);
-
+    const editor = useEditor();
     useEffect(() => {
         editor.observe("contextmenu", (_, e) => {
             const { clientX, clientY } = e as MouseEvent;

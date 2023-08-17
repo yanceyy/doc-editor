@@ -3,13 +3,14 @@ import { HStack, useMediaQuery } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
 
 import { debounce } from "shared/utils";
-import { editor } from "./editorInstance";
+import useEditor from "./context/useEditor.tsx";
 
 export function Editor() {
     const canvasRef = useRef<HTMLDivElement>(null);
     const [thumbnails, setThumbnails] = useState<{ src: string; id: string }[]>(
         []
     );
+    const editor = useEditor();
 
     // single media query with no options
     const [isLargerThan1024] = useMediaQuery("(min-width: 1024px)");
